@@ -5,7 +5,7 @@ const findUserByProperty = (key, value) => {
     return User.findById(value);
   }
 
-  return User.findOne({ [key]: value });
+  return User.findOne({ [key]: value }).select("+password");
 };
 
 const createNewUser = (name, email, password) => {
