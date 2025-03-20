@@ -1,4 +1,5 @@
 const { Schema, model } = require("mongoose");
+const bcrypt = require("../utils/bcrypt");
 
 const userSchema = new Schema({
   name: {
@@ -11,6 +12,10 @@ const userSchema = new Schema({
     required: [true, "Email is required"],
     trim: true,
     lowercase: true,
+    match: [
+      /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/,
+      "Please provide a valid email address",
+    ],
   },
   password: {
     type: String,
@@ -24,6 +29,17 @@ const userSchema = new Schema({
     type: Boolean,
     default: false,
   },
+});
+
+userSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) return next();
+
+  try {
+    this.password = await bcrypt.hashPassword(this.password);
+    next();
+  } catch (error) {
+    next(error);
+  }
 });
 
 const User = model("User", userSchema);
