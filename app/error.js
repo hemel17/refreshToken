@@ -10,7 +10,7 @@ const errorHandler = (err, _req, res, _next) => {
   let errorMessage = err.message || "Internal server error!";
 
   if (err.name === "CastError") {
-    errorMessage = `Invalid ${error.path}`;
+    errorMessage = `Invalid ${err.path}`;
     errorStatus = 400;
   }
 
@@ -25,7 +25,7 @@ const errorHandler = (err, _req, res, _next) => {
   }
 
   if (err.code === 11000) {
-    errorMessage = `This ${Object.keys(error.keyValue)} is already in use!`;
+    errorMessage = `This ${Object.keys(err.keyValue)} is already in use!`;
     errorStatus = 400;
   }
 

@@ -1,6 +1,8 @@
 const User = require("../models/User");
 const createError = require("../utils/error");
+const jwtToken = require("../utils/jwtToken");
 const userService = require("./user");
+const secretKey = process.env.SECRET_KEY;
 
 const register = async (name, email, password) => {
   const user = await userService.findUserByProperty("email", email);
@@ -25,7 +27,20 @@ const login = async (email, password) => {
     throw createError("invalid credential", 400);
   }
 
-  return user;
+  const payload = {
+    _id: user._id,
+    name: user.name,
+    email: user.email,
+    verified: user.verified,
+  };
+
+  const token = await jwtToken.access(payload, secretKey);
+  const refreshToken = await jwtToken.refresh(payload, secretKey);
+
+  user.refreshToken = refreshToken;
+  await user.save();
+
+  return { token, refreshToken };
 };
 
 module.exports = { register, login };

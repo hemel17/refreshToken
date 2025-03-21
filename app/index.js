@@ -13,6 +13,7 @@ app.use(route);
 app.use(routes);
 
 // * error handler
-app.use[(notFoundHandler, errorHandler)];
+app.use(notFoundHandler);
+app.use(errorHandler);
 
 module.exports = app;

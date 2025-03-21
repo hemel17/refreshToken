@@ -28,12 +28,21 @@ const login = async (req, res, next) => {
   }
 
   try {
-    const user = await authService.login(email, password);
+    const { token, refreshToken } = await authService.login(email, password);
+
+    res.cookie("accessToken", token, {
+      httpOnly: true,
+      secure: false,
+    });
+
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: false,
+    });
 
     res.status(200).json({
       success: true,
       message: "login successful",
-      user,
     });
   } catch (error) {
     next(error);
