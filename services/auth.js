@@ -17,7 +17,11 @@ const register = async (name, email, password) => {
 
   await newUser.save();
 
-  const message = emailService.template(otp);
+  await emailService.sendEmail({
+    email,
+    subject: "Verification Code",
+    otp,
+  });
 
   return newUser;
 };

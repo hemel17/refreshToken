@@ -1,3 +1,5 @@
+const nodemailer = require("nodemailer");
+
 const template = (otp) => {
   return `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px; background-color: #f9f9f9;">
@@ -19,4 +21,25 @@ const template = (otp) => {
     `;
 };
 
-module.exports = { template };
+const sendEmail = async ({ email, subject, otp }) => {
+  const transporter = nodemailer.createTransport({
+    host: process.env.SMTP_HOST,
+    service: process.env.SMTP_SERVICE,
+    port: process.env.SMTP_PORT,
+    auth: {
+      user: process.env.SMTP_MAIL,
+      pass: process.env.SMTP_PASSWORD,
+    },
+  });
+
+  const options = {
+    from: process.env.SMTP_MAIL,
+    to: email,
+    subject,
+    html: template(otp),
+  };
+
+  await transporter.sendMail(options);
+};
+
+module.exports = { sendEmail };
