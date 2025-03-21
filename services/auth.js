@@ -1,7 +1,7 @@
-const User = require("../models/User");
 const createError = require("../utils/error");
 const jwtToken = require("../utils/jwtToken");
 const userService = require("./user");
+const emailService = require("./email");
 const secretKey = process.env.SECRET_KEY;
 
 const register = async (name, email, password) => {
@@ -11,7 +11,15 @@ const register = async (name, email, password) => {
     throw createError("user already exists", 400);
   }
 
-  return await userService.createNewUser(name, email, password);
+  const newUser = await userService.createNewUser(name, email, password);
+
+  const otp = await newUser.generateOtp();
+
+  await newUser.save();
+
+  const message = emailService.template(otp);
+
+  return newUser;
 };
 
 const login = async (email, password) => {

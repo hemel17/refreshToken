@@ -24,12 +24,18 @@ const userSchema = new Schema(
       minLength: [6, "Password must be at least 6 characters long"],
       select: false,
     },
-    refreshToken: String,
-    otp: String,
+    role: {
+      type: String,
+      enum: ["user", "admin"],
+      default: "user",
+    },
     verified: {
       type: Boolean,
       default: false,
     },
+    otp: String,
+    otpExpire: Date,
+    refreshToken: String,
   },
   { timestamps: true }
 );
@@ -47,6 +53,14 @@ userSchema.pre("save", async function (next) {
 
 userSchema.methods.comparePassword = async function (enteredPassword) {
   return await bcrypt.comparePassword(enteredPassword, this.password);
+};
+
+userSchema.methods.generateOtp = function () {
+  const otp = Math.floor(10000 + Math.random() * 90000);
+  this.otp = otp;
+  this.otpExpire = new Date(Date.now() + 5 * 60 * 1000);
+
+  return otp;
 };
 
 const User = model("User", userSchema);
