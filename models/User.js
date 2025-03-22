@@ -33,7 +33,7 @@ const userSchema = new Schema(
       type: Boolean,
       default: false,
     },
-    otp: String,
+    otp: Number,
     otpExpire: Date,
     refreshToken: String,
   },
