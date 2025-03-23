@@ -4,7 +4,7 @@ const jwtToken = require("../utils/jwtToken");
 const secretKey = process.env.SECRET_KEY;
 
 const verify = async (email, otp) => {
-  const user = await findUserByProperty({ email });
+  const user = await findUserByProperty("email", email, false);
 
   if (!user) {
     throw createError("user not found", 404);

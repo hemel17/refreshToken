@@ -27,7 +27,7 @@ const register = async (name, email, password) => {
 };
 
 const login = async (email, password) => {
-  const user = await userService.findUserByProperty("email", email);
+  const user = await userService.findUserByProperty("email", email, true);
 
   if (!user) {
     throw createError("invalid credential", 400);

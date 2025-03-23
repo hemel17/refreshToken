@@ -1,11 +1,11 @@
 const User = require("../models/User");
 
-const findUserByProperty = (key, value) => {
+const findUserByProperty = (key, value, verified = false) => {
   if (key === "_id") {
     return User.findById(value);
   }
 
-  return User.findOne({ [key]: value }).select("+password");
+  return User.findOne({ [key]: value, verified }).select("+password");
 };
 
 const createNewUser = (name, email, password) => {
