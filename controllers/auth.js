@@ -33,17 +33,26 @@ const login = async (req, res, next) => {
     res.cookie("accessToken", token, {
       httpOnly: true,
       secure: false,
+      maxAge: 1 * 24 * 60 * 60 * 1000,
     });
 
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: false,
+      maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
     res.status(200).json({
       success: true,
       message: "login successful",
     });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const logout = async (req, res, next) => {
+  try {
   } catch (error) {
     next(error);
   }
