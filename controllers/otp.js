@@ -11,7 +11,7 @@ const verifyOtp = async (req, res, next) => {
   try {
     const { user, token, refreshToken } = await otpService.verify(email, otp);
 
-    res.cookie("accessToken", token, {
+    res.cookie("token", token, {
       httpOnly: true,
       secure: false,
     });

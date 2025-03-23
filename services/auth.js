@@ -56,4 +56,11 @@ const login = async (email, password) => {
   return { token, refreshToken };
 };
 
-module.exports = { register, login };
+const logout = async (userId) => {
+  const user = await userService.findUserByProperty("_id", userId);
+
+  user.refreshToken = null;
+  await user.save();
+};
+
+module.exports = { register, login, logout };

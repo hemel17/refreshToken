@@ -72,7 +72,7 @@ const authenticate = async (req, res, next) => {
           return tryRefreshToken(req, res, next);
         }
 
-        return next(createError("invalid failed", 401));
+        return next(createError("invalid token", 401));
       }
 
       const user = await userService.findUserByProperty("_id", decoded._id);

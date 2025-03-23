@@ -30,7 +30,7 @@ const login = async (req, res, next) => {
   try {
     const { token, refreshToken } = await authService.login(email, password);
 
-    res.cookie("accessToken", token, {
+    res.cookie("token", token, {
       httpOnly: true,
       secure: false,
       maxAge: 1 * 24 * 60 * 60 * 1000,
@@ -51,11 +51,22 @@ const login = async (req, res, next) => {
   }
 };
 
-const logout = async (req, res, next) => {
+const logout = async (req, res) => {
   try {
+    await authService.logout(req.user._id);
+
+    res.clearCookie("token");
+    res.clearCookie("refreshToken");
+
+    res.status(200).json({
+      message: "logout successful",
+    });
   } catch (error) {
-    next(error);
+    console.error("logout error", error);
+    res.status(500).json({
+      message: "an error occurred during logout",
+    });
   }
 };
 
-module.exports = { register, login };
+module.exports = { register, login, logout };
