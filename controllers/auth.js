@@ -12,7 +12,7 @@ const register = async (req, res, next) => {
     const user = await authService.register(name, email, password);
     res.status(201).json({
       success: true,
-      message: "user registered successfully",
+      message: "otp sent",
       user,
     });
   } catch (error) {

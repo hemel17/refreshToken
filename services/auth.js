@@ -44,6 +44,7 @@ const login = async (email, password) => {
     name: user.name,
     email: user.email,
     verified: user.verified,
+    role: user.role,
   };
 
   const token = await jwtToken.access(payload, secretKey);
