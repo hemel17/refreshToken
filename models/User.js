@@ -35,6 +35,8 @@ const userSchema = new Schema(
     },
     otp: Number,
     otpExpire: Date,
+    forgotPasswordOtp: Number,
+    forgotPasswordOtpExpire: Date,
     refreshToken: String,
   },
   { timestamps: true }
@@ -59,6 +61,14 @@ userSchema.methods.generateOtp = function () {
   const otp = Math.floor(10000 + Math.random() * 90000);
   this.otp = otp;
   this.otpExpire = new Date(Date.now() + 5 * 60 * 1000);
+
+  return otp;
+};
+
+userSchema.methods.generateForgotPasswordOtp = function () {
+  const otp = Math.floor(10000 + Math.random() * 90000);
+  this.forgotPasswordOtp = otp;
+  this.forgotPasswordOtpExpire = new Date(Date.now() + 5 * 60 * 1000);
 
   return otp;
 };

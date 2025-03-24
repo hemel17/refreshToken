@@ -5,7 +5,7 @@ const register = async (req, res, next) => {
   const { name, email, password } = req.body;
 
   if (!name || !email || !password) {
-    throw createError("invalid data", 400);
+    return next(createError("invalid data", 400));
   }
 
   try {
@@ -24,7 +24,7 @@ const login = async (req, res, next) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
-    throw createError("invalid data", 400);
+    return next(createError("invalid data", 400));
   }
 
   try {
@@ -51,7 +51,7 @@ const login = async (req, res, next) => {
   }
 };
 
-const logout = async (req, res) => {
+const logout = async (req, res, next) => {
   try {
     await authService.logout(req.user._id);
 
@@ -62,11 +62,27 @@ const logout = async (req, res) => {
       message: "logout successful",
     });
   } catch (error) {
-    console.error("logout error", error);
-    res.status(500).json({
-      message: "an error occurred during logout",
-    });
+    next(error);
   }
 };
 
-module.exports = { register, login, logout };
+const forgotPassword = async (req, res, next) => {
+  const { email } = req.body;
+
+  if (!email) {
+    return next(createError("email is required", 400));
+  }
+
+  try {
+    await authService.forgotPassword(email);
+
+    res.status(200).json({
+      success: true,
+      message: `password reset token sent to ${email}`,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = { register, login, logout, forgotPassword };

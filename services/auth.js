@@ -17,11 +17,12 @@ const register = async (name, email, password) => {
 
   await newUser.save();
 
-  await emailService.sendEmail({
+  await emailService.sendEmail(
     email,
-    subject: "Verification Code",
+    "Verification Code",
     otp,
-  });
+    "verify your email address"
+  );
 
   return newUser;
 };
@@ -63,4 +64,22 @@ const logout = async (userId) => {
   await user.save();
 };
 
-module.exports = { register, login, logout };
+const forgotPassword = async (email) => {
+  const user = await userService.findUserByProperty("email", email, true);
+
+  if (!user) {
+    throw createError("invalid email address", 404);
+  }
+
+  const otp = await user.generateForgotPasswordOtp();
+  await user.save({ validateBeforeSave: false });
+
+  await emailService.sendEmail(
+    email,
+    "Reset Password Code",
+    otp,
+    "change your password"
+  );
+};
+
+module.exports = { register, login, logout, forgotPassword };
