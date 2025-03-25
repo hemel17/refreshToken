@@ -8,9 +8,22 @@ const findUserByProperty = (key, value, verified = false) => {
   return User.findOne({ [key]: value, verified }).select("+password");
 };
 
+const findAllUsers = () => {
+  return User.find();
+};
+
 const createNewUser = (name, email, password) => {
   const user = new User({ name, email, password });
   return user.save();
 };
 
-module.exports = { findUserByProperty, createNewUser };
+const deleteUser = (userID) => {
+  return User.findByIdAndDelete(userID);
+};
+
+module.exports = {
+  findUserByProperty,
+  findAllUsers,
+  createNewUser,
+  deleteUser,
+};

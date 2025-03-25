@@ -1,5 +1,6 @@
 const { Schema, model } = require("mongoose");
 const bcrypt = require("../utils/bcrypt");
+const crypto = require("crypto");
 
 const userSchema = new Schema(
   {
@@ -35,8 +36,8 @@ const userSchema = new Schema(
     },
     otp: Number,
     otpExpire: Date,
-    forgotPasswordOtp: Number,
-    forgotPasswordOtpExpire: Date,
+    forgotPasswordToken: String,
+    forgotPasswordTokenExpire: Date,
     refreshToken: String,
   },
   { timestamps: true }
@@ -65,12 +66,16 @@ userSchema.methods.generateOtp = function () {
   return otp;
 };
 
-userSchema.methods.generateForgotPasswordOtp = function () {
-  const otp = Math.floor(10000 + Math.random() * 90000);
-  this.forgotPasswordOtp = otp;
-  this.forgotPasswordOtpExpire = new Date(Date.now() + 5 * 60 * 1000);
+userSchema.methods.generateForgotPasswordToken = function () {
+  const token = crypto.randomBytes(20).toString("hex");
 
-  return otp;
+  this.forgotPasswordToken = crypto
+    .createHash("sha256")
+    .update(token)
+    .digest("hex");
+  this.forgotPasswordTokenExpire = new Date(Date.now() + 5 * 60 * 1000);
+
+  return token;
 };
 
 const User = model("User", userSchema);

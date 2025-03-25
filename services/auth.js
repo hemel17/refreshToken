@@ -21,7 +21,7 @@ const register = async (name, email, password) => {
     email,
     "Verification Code",
     otp,
-    "verify your email address"
+    "Please use this otp to verify your email address. The code will expire in 5 minutes."
   );
 
   return newUser;
@@ -71,15 +71,18 @@ const forgotPassword = async (email) => {
     throw createError("invalid email address", 404);
   }
 
-  const otp = await user.generateForgotPasswordOtp();
+  const token = await user.generateForgotPasswordToken();
+  const link = `http://localhost:5173/${token}`;
   await user.save({ validateBeforeSave: false });
 
   await emailService.sendEmail(
     email,
-    "Reset Password Code",
-    otp,
-    "change your password"
+    "Reset Password Token",
+    link,
+    "Please use this link to reset your passowrd. The link will expire in 5 minutes."
   );
 };
 
-module.exports = { register, login, logout, forgotPassword };
+const resetPassword = async () => {};
+
+module.exports = { register, login, logout, forgotPassword, resetPassword };
