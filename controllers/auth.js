@@ -85,4 +85,33 @@ const forgotPassword = async (req, res, next) => {
   }
 };
 
-module.exports = { register, login, logout, forgotPassword };
+const resetPassword = async (req, res, next) => {
+  const { resetToken } = req.params;
+  const { newPassword, confirmPassword } = req.body;
+
+  if (!resetToken) {
+    return next(createError("something went wrong. please try again.", 404));
+  }
+
+  if (!newPassword || !confirmPassword) {
+    return next(createError("confirm your password", 400));
+  }
+
+  try {
+    const user = await authService.resetPassword(
+      resetToken,
+      newPassword,
+      confirmPassword
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "password reset successful",
+      user,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = { register, login, logout, forgotPassword, resetPassword };

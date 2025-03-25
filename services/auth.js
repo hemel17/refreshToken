@@ -79,10 +79,40 @@ const forgotPassword = async (email) => {
     email,
     "Reset Password Token",
     link,
-    "Please use this link to reset your passowrd. The link will expire in 5 minutes."
+    "Please use this link to reset your password. The link will expire in 5 minutes."
   );
 };
 
-const resetPassword = async () => {};
+const resetPassword = async (resetToken, newPassword, confirmPassword) => {
+  const user = await userService.findUserByProperty(
+    "forgotPasswordToken",
+    resetToken,
+    true
+  );
+
+  if (!user) {
+    throw createError("invalid user", 404);
+  }
+
+  if (user.forgotPasswordToken !== resetToken) {
+    throw createError("invalid token", 400);
+  }
+
+  if (new Date(Date.now()) > user.forgotPasswordTokenExpire) {
+    throw createError("token already expired", 400);
+  }
+
+  if (newPassword !== confirmPassword) {
+    throw createError("password doesn't match", 400);
+  }
+
+  user.forgotPasswordToken = null;
+  user.forgotPasswordTokenExpire = null;
+  user.password = newPassword;
+
+  await user.save();
+
+  return user;
+};
 
 module.exports = { register, login, logout, forgotPassword, resetPassword };
